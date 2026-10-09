@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "sc-audit"
+version = "0.14.1"
+description = "Stellarcarbon database with monitoring and audit functionality"
+authors = ["Alex Olieman <alex@olieman.net>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://www.stellarcarbon.io/"
+repository = "https://github.com/stellarcarbon/sc-audit"
+packages = [{include = "sc_audit"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+Cython = "^3.2.4"
+SQLAlchemy = "^2.0.46"
+httpx = "^0.28.1"
+parsel = "^1.10.0"
+stellar-sdk = ">=13.2.1"
+pandas = "^2.3.3"
+alembic = "^1.18.1"
+click = "^8.3.1"
+pygithub = "^2.8.1"
+pydantic-settings = "^2.12.0"
+psycopg = {extras = ["binary"], version = "^3.3.2"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.2"
+pytest-cov = "^5.0.0"
+pre-commit = "^4.5.1"
+
+[tool.poetry.scripts]
+sc-audit = 'sc_audit.cli:cli'
+
+[tool.coverage.run]
+source = ["sc_audit"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
