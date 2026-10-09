@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0 (2026-10-09)
+
+
+### Features
+
+* initial commit - sc-ledger project ([c44c984](https://github.com/Catalyste-Network/sc-ledger/commit/c44c984e0ef4231f62577bea108d3279d45ba347))
+
 ## [0.14.1](https://github.com/stellarcarbon/sc-audit/compare/v0.14.0...v0.14.1) (2026-01-28)
 
 
