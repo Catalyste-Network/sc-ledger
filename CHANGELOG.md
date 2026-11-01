@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.0 (2026-11-01)
+
+
+### Features
+
+* initial commit - sc-ledger project ([c44c984](https://github.com/Catalyste-Network/sc-ledger/commit/c44c984e0ef4231f62577bea108d3279d45ba347))
+* **views:** add 'view health' command for DB status overview ([41df844](https://github.com/Catalyste-Network/sc-ledger/commit/41df844ee1914cb715b443e71a11c5519da5ebd7))
+
+
+### Bug Fixes
+
+* resolve lint errors and clean up style across sc_audit/ ([6562b70](https://github.com/Catalyste-Network/sc-ledger/commit/6562b70253ffc0651a91190c218d6a3b049ba67b))
+
 ## [0.14.1](https://github.com/stellarcarbon/sc-audit/compare/v0.14.0...v0.14.1) (2026-01-28)
 
 
