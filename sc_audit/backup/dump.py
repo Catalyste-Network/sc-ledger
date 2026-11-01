@@ -16,14 +16,14 @@ from sc_audit.session_manager import Session
 def dump_table(db_model: type[ScBase] | str, output_path: Path | None = None) -> str | None:
     db_table: Table
     if inspect.isclass(db_model) and issubclass(db_model, ScBase):
-        db_table = db_model.__table__ # type: ignore
+        db_table = db_model.__table__  # type: ignore
     else:
         try:
             db_table = ScBase.metadata.tables[db_model]
         except KeyError:
             table_names = get_table_names()
             raise KeyError(f"`db_model` must be one of {table_names}")
-        
+
     ndjson_table = table_to_ndjson(db_table)
     if output_path is not None:
         with output_path.open('w') as ofile:

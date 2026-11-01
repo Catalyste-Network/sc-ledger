@@ -43,11 +43,11 @@ class Retirement(RetirementBase, ScBase):
 
     vcs_project: Mapped[VcsProject] = relationship(init=False, repr=False)
     retired_from: Mapped[list[RetirementFromBlock]] = relationship(
-        init=False, repr=False, 
+        init=False, repr=False,
         back_populates='retirement',
     )
     sink_statuses: Mapped[list[SinkStatus]] = relationship(
-        init=False, repr=False, 
+        init=False, repr=False,
         back_populates='retirement',
     )
 
@@ -56,12 +56,12 @@ class Retirement(RetirementBase, ScBase):
         tag, *tx_hashes = self.retirement_details.split()
         assert tag.startswith("stellarcarbon")
         return tx_hashes
-    
+
     def validate_serial_number(self):
         value = self.serial_number
         if not value:
             raise ValueError("Serial number cannot be empty")
-        
+
         serial_number = VcsSerialNumber.from_str(value)
         vcu_amount = 1 + serial_number.block_end - serial_number.block_start
         if serial_number.project_id != self.vcs_project_id:
@@ -73,7 +73,7 @@ class Retirement(RetirementBase, ScBase):
                 f"Serial number {value} implies a VCU amount of {vcu_amount},"
                 f" but got vcu_amount={self.vcu_amount}"
             )
-    
+
     def as_dict(self, related: bool = False):
         data = {
             col: getattr(self, col)
@@ -90,12 +90,13 @@ class Retirement(RetirementBase, ScBase):
                 status.as_dict() for status in self.sink_statuses
                 if status.certificate_id
             ]
-        
+
         return data
 
 
 idx_retirement_date = Index("idx_retirement_date", Retirement.retirement_date.desc())
 idx_retirement_beneficiary = Index("idx_retirement_beneficiary", Retirement.retirement_beneficiary)
+
 
 @event.listens_for(Retirement, "before_insert")
 def validate_retirement(mapper, connection, target: Retirement):

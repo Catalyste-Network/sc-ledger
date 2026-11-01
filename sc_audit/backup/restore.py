@@ -26,9 +26,10 @@ TABLE_LOADING_ORDER = (
     SinkStatus,
 )
 
+
 def restore_all_tables(input_dir: Path, replace: bool = False):
     for db_model in TABLE_LOADING_ORDER:
-        table_name = db_model.__table__.name # type: ignore
+        table_name = db_model.__table__.name  # type: ignore
         dump_file = input_dir / f"{table_name}.ndjson"
         if dump_file.exists():
             restore_table(dump_file, replace=replace)
@@ -52,7 +53,7 @@ def restore_table(json_path: Path, replace: bool = False):
             if num_rows:
                 print(f"Leaving {num_rows} rows from {table_name} intact")
                 return
-            
+
         # insert the dataframe records into the table
         column_dtypes = {c.name: c.type for c in db_table.columns}
         num_rows = tdf.to_sql(
@@ -61,7 +62,7 @@ def restore_table(json_path: Path, replace: bool = False):
             if_exists='append',
             index=False,
             chunksize=200,
-            dtype=column_dtypes, # type: ignore
+            dtype=column_dtypes,  # type: ignore
         )
         print(f"Restored {num_rows} rows into {table_name}")
 

@@ -125,7 +125,7 @@ class TestConstructStxQuery:
             finalized=True,
             contract_call=None,
         )
-        assert "WHERE sink_status.finalized = true" in str(stxq)
+        assert "WHERE sink_status.finalized IS true" in str(stxq)
 
         stxq = sink_status_view.construct_stx_query(
             for_funder=None,
@@ -136,7 +136,7 @@ class TestConstructStxQuery:
             contract_call=None,
         )
         assert str(stxq).replace(' \n', '').endswith(
-            "WHERE NOT (EXISTS (SELECT *FROM sink_statusWHERE sink_status.sinking_tx_hash = sinking_txs.hash AND sink_status.finalized = true))"
+            "WHERE NOT (EXISTS (SELECT *FROM sink_statusWHERE sink_status.sinking_tx_hash = sinking_txs.hash AND sink_status.finalized IS true))"
         )
 
     def test_construct_query_contract_call(self):

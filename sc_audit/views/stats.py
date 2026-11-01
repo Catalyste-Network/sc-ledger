@@ -59,28 +59,28 @@ def view_yoy_analytics() -> pd.DataFrame:
     df = view_sinking_txs(order='asc')
     if df.empty:
         return pd.DataFrame()
-    
+
     # Compute price for USDC transactions
     df['price'] = np.where(
-        df['dest_asset_code'] == 'USDC', 
+        df['dest_asset_code'] == 'USDC',
         df['dest_asset_amount'].astype(float) / df['carbon_amount'].astype(float),
         np.nan
     )
-    
+
     # Interpolate prices linearly, then extrapolate using forward fill for trailing CARBON transactions
     df['price'] = df['price'].interpolate(method='linear').ffill()
-    
+
     # Convert CARBON denominated amounts to USD using the interpolated price
     mask = df['dest_asset_code'] == 'CARBON'
     df.loc[mask, 'dest_asset_amount'] = df.loc[mask, 'price'] * df.loc[mask, 'carbon_amount'].astype(float)
-    
+
     # Ensure all dest_asset_amount are float for consistent summing
     df['dest_asset_amount'] = df['dest_asset_amount'].astype(float)
-    
+
     # Add year and month columns for binning
     df['year'] = df['created_at'].dt.year
     df['month'] = df['created_at'].dt.month
-    
+
     # Calculate monthly active users (distinct recipients per month)
     mau_df = df.groupby(['year', 'month'])['recipient'].nunique().reset_index()
     mau_yearly = (
@@ -90,7 +90,7 @@ def view_yoy_analytics() -> pd.DataFrame:
         .rename(columns={'recipient': 'mau'})
     )
     mau_yearly['mau'] = mau_yearly['mau'].astype(float).round(2)
-    
+
     # Calculate yearly aggregates
     yearly = df.groupby('year').agg(
         num_tx=('hash', 'count'),
@@ -98,21 +98,21 @@ def view_yoy_analytics() -> pd.DataFrame:
         carbon_sunk=('carbon_amount', 'sum')
     ).reset_index()
     yearly['volume_usd'] = yearly['volume_usd'].astype(float).round(2)
-    
+
     # Merge MAU with yearly data
     result = yearly.merge(mau_yearly, on='year', how='left')
-    
+
     # Sort by year
     result = result.sort_values('year')
-    
+
     # Calculate year-over-year percentage changes
     for col in ['mau', 'num_tx', 'volume_usd', 'carbon_sunk']:
         result[f'yoy_{col}'] = (result[col].astype(float).pct_change() * 100).round(2)
-    
+
     # Reorder columns: year, then each core column followed by its yoy column
     result = result[[
-        'year', 'mau', 'yoy_mau', 'num_tx', 'yoy_num_tx', 
+        'year', 'mau', 'yoy_mau', 'num_tx', 'yoy_num_tx',
         'volume_usd', 'yoy_volume_usd', 'carbon_sunk', 'yoy_carbon_sunk',
     ]]
-    
+
     return result

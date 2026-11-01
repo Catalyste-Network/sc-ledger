@@ -21,13 +21,13 @@ def get_default_db_path(db_name="sc-audit.sqlite3") -> Path:
     if home_dir in work_dir.resolve().parents:
         if work_dir.name == "sc_audit":
             return work_dir.parent / db_name
-        
+
         return work_dir / db_name
     else:
         db_dir = home_dir / "sc-audit"
         db_dir.mkdir(exist_ok=True)
         return db_dir / db_name
-    
+
 
 DbTablePrefix = Literal["test"] | None
 

@@ -24,12 +24,12 @@ class HexBinary(types.TypeDecorator):
 
     def process_bind_param(self, value: str, dialect: Dialect) -> bytes:
         return bytes.fromhex(value)
-    
+
     def process_result_value(self, value: bytes, dialect: Dialect) -> str:
         if value is None:
             # this can happen during joins or eager loading
             return ""
-        
+
         return value.hex()
 
 
@@ -63,7 +63,7 @@ def prefix_tables_and_foreign_keys(subclass: Type[DeclarativeBase]):
         # Check if the prefix has already been applied
         # unless the class is a test mapper class
         if (
-            subclass.__name__.startswith('Test') 
+            subclass.__name__.startswith('Test')
             or not subclass.__tablename__.startswith(settings.TABLE_PREFIX)
         ):
             # Prefix the table name
@@ -93,7 +93,7 @@ def create_test_mappers(base_class: Type[DeclarativeBase]):
     settings.TABLE_PREFIX = "test"
     for model in models:
         type(
-            f'Test{model.__name__}', 
-            model.__bases__, 
+            f'Test{model.__name__}',
+            model.__bases__,
             {"__tablename__": model.__tablename__}
         )

@@ -33,7 +33,7 @@ class SinkEvent(BaseModel):
         return cls(**data)
 
 
-def get_sink_events(cursor: int=settings.FIRST_SINK_CURSOR) -> list[SinkEvent]:
+def get_sink_events(cursor: int = settings.FIRST_SINK_CURSOR) -> list[SinkEvent]:
     if not settings.MERCURY_KEY:
         raise MercuryError(
             "Skip sink events: Mercury key is not set in the configuration.",
@@ -72,7 +72,7 @@ def get_sink_events(cursor: int=settings.FIRST_SINK_CURSOR) -> list[SinkEvent]:
                 mercury_key=settings.MERCURY_KEY,
                 retroshades_md5=settings.RETROSHADES_MD5,
             )
-        
+
         events = resp.json()
 
     return [SinkEvent.from_raw(**event) for event in events]
@@ -81,7 +81,6 @@ def get_sink_events(cursor: int=settings.FIRST_SINK_CURSOR) -> list[SinkEvent]:
 class MercuryError(Exception):
     def __init__(self, msg, mercury_key: str, retroshades_md5: str):
         super().__init__(msg, mercury_key, retroshades_md5)
-
 
 
 if __name__ == "__main__":

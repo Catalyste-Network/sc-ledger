@@ -5,7 +5,7 @@ Author: Alex Olieman <https://keybase.io/alioli>
 """
 from __future__ import annotations
 import datetime as dt
-from  decimal import Decimal
+from decimal import Decimal
 import typing
 
 from sqlalchemy import ForeignKey, Index, String
@@ -47,7 +47,7 @@ class SinkingTx(SinkingTxBase, ScBase):
 
     vcs_project: Mapped[VcsProject] = relationship(init=False, repr=False)
     statuses: Mapped[list[SinkStatus]] = relationship(
-        init=False, repr=False, 
+        init=False, repr=False,
         back_populates='sinking_transaction',
         lazy='selectin',
         order_by="asc(SinkStatus.certificate_id)"
@@ -59,7 +59,7 @@ class SinkingTx(SinkingTxBase, ScBase):
             (ss.amount_filled for ss in self.statuses),
             start=Decimal()
         )
-    
+
     def as_dict(self):
         data = {
             col: getattr(self, col)
@@ -70,7 +70,7 @@ class SinkingTx(SinkingTxBase, ScBase):
             if status.certificate_id
         ]
         return data
-    
+
 
 idx_created_at = Index("idx_stx_created_at", SinkingTx.created_at.desc())
 idx_toid = Index("idx_stx_toid", SinkingTx.toid.desc(), unique=True)

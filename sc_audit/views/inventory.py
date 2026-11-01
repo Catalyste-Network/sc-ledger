@@ -38,7 +38,7 @@ def view_inventory(omit_empty: bool = False, until_date: dt.date | None = None) 
         MintedBlock.vcs_project_id,
         VcsProject.name,
         VcsProject.category,
-    ]    
+    ]
     columns = block_columns + vcs_project_columns
     q_blocks = select(*columns).join(MintedBlock.vcs_project).order_by(MintedBlock.toid)
     if omit_empty:

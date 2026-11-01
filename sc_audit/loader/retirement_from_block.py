@@ -43,6 +43,7 @@ def load_retirement_from_block() -> int:
 
     return number_loaded
 
+
 def cover_retirement(session, retirement: Retirement) -> list[RetirementFromBlock]:
     serial_number = VcsSerialNumber.from_str(retirement.serial_number)
     q_matching_blocks = (
@@ -81,10 +82,11 @@ def cover_retirement(session, retirement: Retirement) -> list[RetirementFromBloc
     raise_if_uncovered(retirement, retirement_from_blocks)
     return retirement_from_blocks
 
+
 def overlap_size(serial_number: VcsSerialNumber, block: MintedBlock) -> int:
     return max(
         0, (
-            1 + min(serial_number.block_end, block.block_end) 
+            1 + min(serial_number.block_end, block.block_end)
             - max(serial_number.block_start, block.block_start)
         )
     )
@@ -94,6 +96,7 @@ class BlockOverspent(Exception):
     def __init__(self, msg, block_hash: str, certificate_id: int):
         super().__init__(msg, block_hash, certificate_id)
 
+
 def raise_if_overspent(block: MintedBlock, retirement_from_block: RetirementFromBlock):
     if retirement_from_block.vcu_amount > block.credits_remaining:
         raise BlockOverspent(
@@ -102,11 +105,12 @@ def raise_if_overspent(block: MintedBlock, retirement_from_block: RetirementFrom
             block_hash=block.serial_hash,
             certificate_id=retirement_from_block.retirement_id
         )
-    
+
 
 class CoveringBlockMissing(Exception):
     def __init__(self, msg, retirement: Retirement, new_blocks: list[RetirementFromBlock]):
         super().__init__(msg, retirement, new_blocks)
+
 
 def raise_if_uncovered(retirement: Retirement, new_blocks: list[RetirementFromBlock]):
     new_coverage: int = sum(rfb.vcu_amount for rfb in new_blocks)

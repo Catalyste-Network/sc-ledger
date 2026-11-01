@@ -30,6 +30,7 @@ from sc_audit.views.inventory import view_inventory
 from sc_audit.views.retirement import view_retirements
 from sc_audit.views.sink_status import view_sinking_txs
 from sc_audit.views.stats import view_yoy_analytics
+from sc_audit.views.health import view_health
 from sc_audit.views.utils import format_df
 
 
@@ -49,15 +50,17 @@ def db_catch_up(fresh: bool):
         download_dir = download_compatible_dumps()
         restore_all_tables(download_dir)
         shutil.rmtree(download_dir)
-    
+
     catch_up_from_sources()
 
 # VIEWS
+
 
 @cli.group()
 def view():
     """View the state of Stellarcarbon assets and transactions"""
     pass
+
 
 view_format = click.Option(
     ["-f", "--format"],
@@ -67,11 +70,12 @@ view_format = click.Option(
     show_default=True,
 )
 
+
 @view.command(name="inventory", params=[view_format])
 @click.option("--omit-empty", is_flag=True, help="Don't show empty minted blocks")
 @click.option(
-    "--until-date", 
-    type=click.DateTime(formats=["%Y-%m-%d"]), 
+    "--until-date",
+    type=click.DateTime(formats=["%Y-%m-%d"]),
     help="Reconstruct the inventory on the given date"
 )
 def cli_view_inventory(omit_empty: bool, until_date: dt.datetime | None, format: str):
@@ -84,23 +88,23 @@ def cli_view_inventory(omit_empty: bool, until_date: dt.datetime | None, format:
 @view.command(name="retirements", params=[view_format])
 @click.option("--beneficiary", help="Only show retirements for the given beneficiary address")
 @click.option(
-    "--from-date", 
-    type=click.DateTime(formats=["%Y-%m-%d"]), 
+    "--from-date",
+    type=click.DateTime(formats=["%Y-%m-%d"]),
     help="Filter retirements that happened on or after the given date"
 )
 @click.option(
-    "--before-date", 
-    type=click.DateTime(formats=["%Y-%m-%d"]), 
+    "--before-date",
+    type=click.DateTime(formats=["%Y-%m-%d"]),
     help="Filter retirements that happened before the given date"
 )
 @click.option("--project", type=int, help="Filter by impact project")
 def cli_view_retirements(
-        beneficiary: str | None, 
+        beneficiary: str | None,
         from_date: dt.datetime | None,
         before_date: dt.datetime | None,
         project: int | None,
         format: str,
-    ):
+        ):
     """View finalized retirements and the attributes of the retired credits"""
     from_dt_date = from_date.date() if from_date else None
     before_dt_date = before_date.date() if before_date else None
@@ -117,30 +121,30 @@ def cli_view_retirements(
 @click.option("--funder", help="Only show transactions for the given funder address")
 @click.option("--recipient", help="Only show transactions for the given recipient address")
 @click.option(
-    "--from-date", 
-    type=click.DateTime(formats=["%Y-%m-%d"]), 
+    "--from-date",
+    type=click.DateTime(formats=["%Y-%m-%d"]),
     help="Filter transactions that happened on or after the given date"
 )
 @click.option(
-    "--before-date", 
-    type=click.DateTime(formats=["%Y-%m-%d"]), 
+    "--before-date",
+    type=click.DateTime(formats=["%Y-%m-%d"]),
     help="Filter transactions that happened before the given date"
 )
 @click.option("--finalized", type=bool, help="Filter by retirement status")
 @click.option(
-    "--contract-call", 
-    type=bool, 
+    "--contract-call",
+    type=bool,
     help="Only show transactions done through sorocarbon, or exclude them"
 )
 def cli_view_sink_status(
         funder: str | None,
-        recipient: str | None, 
+        recipient: str | None,
         from_date: dt.datetime | None,
         before_date: dt.datetime | None,
         finalized: bool | None,
         contract_call: bool | None,
         format: str,
-    ):
+        ):
     """View sinking transactions and their retirement status"""
     from_dt_date = from_date.date() if from_date else None
     before_dt_date = before_date.date() if before_date else None
@@ -161,7 +165,15 @@ def cli_view_yoy_analytics(format: str):
     df = view_yoy_analytics()
     click.echo(format_df(df, format=format))
 
+
+@view.command(name="health", params=[view_format])
+def cli_view_health(format: str):
+    """View DB record counts and last-loaded timestamps per table"""
+    df = view_health()
+    click.echo(format_df(df, format=format))
+
 # LOADING
+
 
 @cli.group()
 def load():
@@ -180,7 +192,7 @@ def db_load_impact_projects():
 def db_load_minted_blocks():
     """Load minted blocks into the DB"""
     mint_cursor = get_latest_attr('mint_tx')
-    num_minting_txs = load_minted_blocks(cursor=mint_cursor) # type: ignore[arg-type]
+    num_minting_txs = load_minted_blocks(cursor=mint_cursor)  # type: ignore[arg-type]
     click.echo(f"Loaded {num_minting_txs} minted blocks")
 
 
@@ -188,14 +200,14 @@ def db_load_minted_blocks():
 def db_load_distribution_outflows():
     """Load distribution outflows into the DB"""
     dist_cursor = get_latest_attr('dist_tx')
-    num_distribution_txs = load_distribution_txs(cursor=dist_cursor) # type: ignore[arg-type]
+    num_distribution_txs = load_distribution_txs(cursor=dist_cursor)  # type: ignore[arg-type]
     click.echo(f"Loaded {num_distribution_txs} distribution outflows")
 
 
 @load.command(name="sinking-txs")
 def db_load_sinking_txs():
     """Load sinking transactions into the DB"""
-    sink_cursor: int = get_latest_attr('sink_tx') # type: ignore[return-value]
+    sink_cursor: int = get_latest_attr('sink_tx')  # type: ignore[return-value]
     num_sinking_txs = load_sinking_txs(cursor=sink_cursor)
     click.echo(f"Loaded {num_sinking_txs} sinking transactions")
 
@@ -203,18 +215,18 @@ def db_load_sinking_txs():
 @load.command(name="sink-contract-calls")
 def db_load_sink_contract_calls():
     """Attempt to load SinkContract txs from Obsrvr or Mercury into the DB"""
-    sink_cursor: int = get_latest_attr('sink_call') # type: ignore[return-value]
+    sink_cursor: int = get_latest_attr('sink_call')  # type: ignore[return-value]
     try:
         num_sink_invocations = load_sink_invocations(cursor=sink_cursor)
         print(f"Loaded {num_sink_invocations} sink invocations")
     except ObsrvrError as exc:
-        click.echo(f"Couldn't load sink invocations from Obsrvr")
+        click.echo("Couldn't load sink invocations from Obsrvr")
         click.echo(repr(exc), err=True)
         try:
             num_sink_events = load_sink_events(cursor=sink_cursor)
             print(f"Loaded {num_sink_events} sink events")
         except MercuryError as exc:
-            click.echo(f"Couldn't load sink events from Mercury")
+            click.echo("Couldn't load sink events from Mercury")
             click.echo(repr(exc), err=True)
 
 
@@ -222,7 +234,7 @@ def db_load_sink_contract_calls():
 def db_load_retirements():
     """Load retirements into the DB"""
     retirement_date = get_latest_attr('retirement')
-    num_retirements = load_retirements(from_date=retirement_date) # type: ignore[arg-type]
+    num_retirements = load_retirements(from_date=retirement_date)  # type: ignore[arg-type]
     click.echo(f"Loaded {num_retirements} retirements")
 
 
@@ -236,10 +248,12 @@ def db_load_associations():
 
 # MIGRATIONS
 
+
 @cli.group()
 def schema():
     """Database schema migration commands"""
     pass
+
 
 @schema.command(name="current")
 @click.option("-v", "--verbose", is_flag=True, default=False, help="Verbose mode")
@@ -262,6 +276,7 @@ def db_downgrade_schema(revision):
     migrations.downgrade(revision)
 
 # BACKUP
+
 
 @cli.group()
 def backup():
@@ -297,11 +312,9 @@ def db_restore_tables(input_dir, replace: bool, table: list[str]):
 
     if selected_tables:
         for db_model in TABLE_LOADING_ORDER:
-            table_name = db_model.__table__.name # type: ignore
+            table_name = db_model.__table__.name  # type: ignore
             if table_name in selected_tables:
                 dump_file = input_dir / f"{table_name}.ndjson"
                 restore_table(dump_file, replace=replace)
     else:
         restore_all_tables(input_dir, replace=replace)
-
-    
