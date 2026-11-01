@@ -45,7 +45,7 @@ def get_retirements_list(from_date: dt.date | None = None):
 
     retirements_data = format_verra_retirements(resp.text)
     total_amount_retired = sum(
-        rtm['vcu_amount'] 
+        rtm['vcu_amount']
         for rtm in retirements_data['retirements']
     )
 
@@ -58,7 +58,7 @@ def format_verra_retirements(retirements_payload: str):
     count_exceeded: bool = True if root.jmespath('countExceeded').get() == 'true' else False
     item_multiselect = """
         value[].{
-            issuance_date: issuanceDate, 
+            issuance_date: issuanceDate,
             instrument_type: instrumentType,
             vintage_start: vintageStart,
             vintage_end: vintageEnd,

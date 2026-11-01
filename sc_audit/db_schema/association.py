@@ -30,7 +30,7 @@ class RetirementFromBlock(RetirementFromBlockBase, ScBase):
         back_populates='retired_from'
     )
     block: Mapped[MintedBlock] = relationship(
-        init=False, repr=False, 
+        init=False, repr=False,
         back_populates='consumed_by'
     )
 
@@ -53,7 +53,7 @@ class SinkStatus(SinkStatusBase, ScBase):
     __tablename__ = "sink_status"
 
     sinking_transaction: Mapped[SinkingTx] = relationship(
-        init=False, repr=False, 
+        init=False, repr=False,
         back_populates='statuses'
     )
     retirement: Mapped[Retirement] = relationship(
@@ -66,6 +66,6 @@ class SinkStatus(SinkStatusBase, ScBase):
             col: getattr(self, col)
             for col in self.__table__.columns.keys()
         }
-    
+
 
 idx_finalized = Index("idx_finalized", SinkStatus.finalized)

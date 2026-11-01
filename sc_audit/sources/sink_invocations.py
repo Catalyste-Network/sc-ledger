@@ -17,7 +17,8 @@ from sc_audit.constants import KG, UNIT_IN_STROOPS
 from sc_audit.db_schema.base import bigint, intpk
 
 
-class FlowBase(MappedAsDataclass, DeclarativeBase): ...
+class FlowBase(MappedAsDataclass, DeclarativeBase):
+    ...
 
 
 class SinkInvocation(FlowBase):
@@ -46,12 +47,12 @@ class SinkInvocation(FlowBase):
     @hybrid_property
     def ton_amount(self) -> Decimal:
         return (self.amount / UNIT_IN_STROOPS).quantize(KG, rounding=ROUND_DOWN)
-    
+
 
 class ObsrvrError(Exception):
     def __init__(self, msg, dsn_uri: str | None):
         super().__init__(msg, dsn_uri)
-    
+
 
 class InvocationSource:
     db_url: URL | None
@@ -70,7 +71,7 @@ class InvocationSource:
         engine = create_engine(db_url)
 
     @classmethod
-    def get_sink_invocations(cls, cursor: int=settings.FIRST_SINK_CURSOR) -> Sequence[SinkInvocation]:
+    def get_sink_invocations(cls, cursor: int = settings.FIRST_SINK_CURSOR) -> Sequence[SinkInvocation]:
         if not cls.engine:
             raise ObsrvrError(
                 "Skip sink invocations: Obsrvr DB URI is not set in the configuration.",
@@ -78,7 +79,7 @@ class InvocationSource:
             )
 
         query = select(SinkInvocation).where(SinkInvocation.toid > cursor)
-        
+
         with Session(cls.engine, expire_on_commit=False) as session:
             invokes = session.scalars(query).all()
 

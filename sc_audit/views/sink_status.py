@@ -19,7 +19,7 @@ from sc_audit.session_manager import Session
 
 def view_sinking_txs(
         for_funder: str | None = None,
-        for_recipient: str | None = None, 
+        for_recipient: str | None = None,
         from_date: dt.date | None = None,
         before_date: dt.date | None = None,
         finalized: bool | None = None,
@@ -47,7 +47,7 @@ def view_sinking_txs(
         token_query = select(subq_toid).select_from(base_query)
         if cursor and cursor > 0:
             token_query = token_query.where(cursor_filter)
-        
+
         token_query = token_query.order_by(subq_order).distinct().limit(limit)
         toids = session.scalars(token_query).all()
 
@@ -70,7 +70,7 @@ def view_sinking_txs(
 
 def construct_stx_query(
         for_funder: str | None,
-        for_recipient: str | None, 
+        for_recipient: str | None,
         from_date: dt.date | None,
         before_date: dt.date | None,
         finalized: bool | None,
@@ -80,35 +80,35 @@ def construct_stx_query(
     q_txs = select(SinkingTx)
     if for_funder:
         q_txs = q_txs.where(SinkingTx.funder == for_funder)
-    
+
     if for_recipient:
         q_txs = q_txs.where(SinkingTx.recipient == for_recipient)
-    
+
     if from_date:
         from_dt = dt.datetime(from_date.year, from_date.month, from_date.day)
         q_txs = q_txs.where(SinkingTx.created_at >= from_dt)
-    
+
     if before_date:
         before_dt = dt.datetime(before_date.year, before_date.month, before_date.day)
         q_txs = q_txs.where(SinkingTx.created_at < before_dt)
-    
+
     if finalized is False:
         # filter on sink txs without any SinkStatus with finalized=True
         # this clause needs to be the perfect negation of `finalized is True`
         q_txs = q_txs.where(
             not_(exists().where(
-                SinkStatus.sinking_tx_hash == SinkingTx.hash, SinkStatus.finalized == True
+                SinkStatus.sinking_tx_hash == SinkingTx.hash, SinkStatus.finalized.is_(True)
             ).correlate(SinkingTx))
         )
     elif finalized is True:
         # select sink txs that have at least one SinkStatus with finalized=True
-        q_txs = q_txs.outerjoin(SinkStatus).where(SinkStatus.finalized == True)
+        q_txs = q_txs.outerjoin(SinkStatus).where(SinkStatus.finalized.is_(True))
 
     if contract_call is True:
         q_txs = q_txs.where(SinkingTx.contract_id.is_not(None))
     elif contract_call is False:
         q_txs = q_txs.where(SinkingTx.contract_id.is_(None))
-    
+
     return q_txs
 
 

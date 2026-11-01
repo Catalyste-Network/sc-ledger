@@ -24,8 +24,10 @@ LatestAttr = Union[dt.date, int, None]
 @overload
 def get_latest_attr(*models: *tuple[CoreModelName]) -> LatestAttr: ...
 
+
 @overload
 def get_latest_attr(*models: CoreModelName) -> list[LatestAttr]: ...
+
 
 def get_latest_attr(*models: CoreModelName) -> LatestAttr | list[LatestAttr]:
     latest_attrs: list[LatestAttr] = [None] * len(models)

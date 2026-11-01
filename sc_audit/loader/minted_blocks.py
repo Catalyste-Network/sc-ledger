@@ -25,7 +25,7 @@ from sc_audit.sources.carbon_pool import get_carbon_pool_state
 from sc_audit.sources.minting_txs import get_minting_transactions
 
 
-def load_minted_blocks(cursor: int=settings.FIRST_MINT_CURSOR) -> int:
+def load_minted_blocks(cursor: int = settings.FIRST_MINT_CURSOR) -> int:
     """
     Load (all) minting transactions from Horizon into the DB.
 
@@ -49,7 +49,7 @@ def load_minted_blocks(cursor: int=settings.FIRST_MINT_CURSOR) -> int:
             # check whether the block is pristine
             serial_hash = decode_hash_memo(mint_tx['transaction']['memo'])
             if serial_hash in carbon_pool:
-                serial_number = VcsSerialNumber.from_str(carbon_pool[serial_hash]['serial_number']) # type: ignore
+                serial_number = VcsSerialNumber.from_str(carbon_pool[serial_hash]['serial_number'])  # type: ignore
                 block = MintedBlock(
                     serial_hash=serial_hash,
                     transaction_hash=mint_tx['transaction_hash'],
@@ -58,8 +58,8 @@ def load_minted_blocks(cursor: int=settings.FIRST_MINT_CURSOR) -> int:
                     serial_number=serial_number.to_str(),
                     block_start=serial_number.block_start,
                     block_end=serial_number.block_end,
-                    sub_account_id=carbon_pool[serial_hash]['sub_account_id'], # type: ignore
-                    sub_account_name=carbon_pool[serial_hash]['sub_account_name'], # type: ignore
+                    sub_account_id=carbon_pool[serial_hash]['sub_account_id'],  # type: ignore
+                    sub_account_name=carbon_pool[serial_hash]['sub_account_name'],  # type: ignore
                     vintage_start=serial_number.vintage_start_date,
                     vintage_end=serial_number.vintage_end_date,
                     toid=mint_tx['paging_token']
@@ -84,15 +84,16 @@ def load_minted_blocks(cursor: int=settings.FIRST_MINT_CURSOR) -> int:
         session.add_all(pristine_blocks)
 
     return len(retired_blocks) + len(pristine_blocks)
-            
-            
+
+
 def get_vcs_project_id(mint_tx) -> Literal[1360]:
     # TODO: support multiple VCS projects
     return 1360
 
+
 def index_carbon_pool() -> dict[str, dict[str, str | int]]:
     """
-    Index current blocks in the carbon pool by sha256(serial_number).    
+    Index current blocks in the carbon pool by sha256(serial_number).
     """
     indexed_pool = {}
     carbon_pool = get_carbon_pool_state()
@@ -102,11 +103,12 @@ def index_carbon_pool() -> dict[str, dict[str, str | int]]:
 
     return indexed_pool
 
+
 def reconstruct_blocks(
         mint_txs: list[dict[str, Any]],
         latest_block: MintedBlock | None,
-        retirements: Sequence[Retirement]
-    ) -> list[MintedBlock]:
+        retirements: Sequence[Retirement],
+        ) -> list[MintedBlock]:
     """
     Attempt to reconstruct blocks by:
     1. checking if the block directly follows the last known block
@@ -157,6 +159,7 @@ def reconstruct_blocks(
 
     assert len(reconstructed_blocks) == len(mint_txs)
     return reconstructed_blocks
+
 
 def serial_matches_hash(reconstructed_serial: VcsSerialNumber, serial_hash: str) -> bool:
     """

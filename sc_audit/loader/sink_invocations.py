@@ -12,7 +12,7 @@ from sc_audit.session_manager import Session
 from sc_audit.sources.sink_invocations import InvocationSource
 
 
-def load_sink_invocations(cursor: int=settings.FIRST_SINK_CURSOR) -> int:
+def load_sink_invocations(cursor: int = settings.FIRST_SINK_CURSOR) -> int:
     """
     Load (all) sink invocations from Obsrvr Flow into the DB.
 
@@ -27,7 +27,7 @@ def load_sink_invocations(cursor: int=settings.FIRST_SINK_CURSOR) -> int:
             memo = sink_invoke.memo_text or None
             if memo:
                 memo = truncate_sorocarbon_memo(memo)
-                
+
             session.add(
                 SinkingTx(
                     hash=sink_invoke.tx_hash,
@@ -48,7 +48,7 @@ def load_sink_invocations(cursor: int=settings.FIRST_SINK_CURSOR) -> int:
                     toid=sink_invoke.toid,
                 )
             )
-        
+
         number_loaded = len(session.new)
 
     return number_loaded

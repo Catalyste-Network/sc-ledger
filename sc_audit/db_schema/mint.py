@@ -20,14 +20,16 @@ if typing.TYPE_CHECKING:
 
 
 VerraSubAccountName = typing.Literal[
-    "CARBON Pool | stellarcarbon.io", 
+    "CARBON Pool | stellarcarbon.io",
     "CARBON Sink | stellarcarbon.io"
 ]
+
 
 @dataclass
 class VerraSubAccount:
     id: int
     name: VerraSubAccountName
+
 
 verra_carbon_pool = VerraSubAccount(11273, "CARBON Pool | stellarcarbon.io")
 verra_carbon_sink = VerraSubAccount(11274, "CARBON Sink | stellarcarbon.io")
@@ -54,7 +56,7 @@ class MintedBlock(MintedBlockBase, ScBase):
 
     vcs_project: Mapped[VcsProject] = relationship(init=False, repr=False, back_populates='minted_blocks')
     consumed_by: Mapped[list[RetirementFromBlock]] = relationship(
-        init=False, repr=False, 
+        init=False, repr=False,
         back_populates='block',
         lazy='selectin',
         order_by="asc(RetirementFromBlock.retirement_id)"
@@ -63,12 +65,12 @@ class MintedBlock(MintedBlockBase, ScBase):
     @hybrid_property
     def size(self) -> int:
         return 1 + self.block_end - self.block_start
-    
+
     @hybrid_property
     def credits_remaining(self) -> int:
         credits_consumed = sum(rfb.vcu_amount for rfb in self.consumed_by)
         return self.size - credits_consumed
-    
+
     @credits_remaining.inplace.expression
     @classmethod
     def _credits_remaining_expression(cls) -> SQLColumnExpression[int]:
@@ -78,7 +80,7 @@ class MintedBlock(MintedBlockBase, ScBase):
             .where(RetirementFromBlock.block_hash == cls.serial_hash)
             .label("credits_remaining")
         )
-    
+
     @hybrid_method
     def credits_remaining_on_date(self, on_date: dt.date) -> int:
         credits_consumed = sum(
@@ -87,7 +89,7 @@ class MintedBlock(MintedBlockBase, ScBase):
             if rfb.retirement.retirement_date <= on_date
         )
         return self.size - credits_consumed
-    
+
     @credits_remaining_on_date.inplace.expression
     @classmethod
     def _credits_remaining_on_date_expression(cls, on_date: dt.date) -> SQLColumnExpression[int]:

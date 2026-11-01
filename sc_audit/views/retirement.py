@@ -17,7 +17,7 @@ from sc_audit.session_manager import Session
 
 
 def view_retirements(
-        for_beneficiary: str | None = None, 
+        for_beneficiary: str | None = None,
         from_date: dt.date | None = None,
         before_date: dt.date | None = None,
         project: int | None = None,
@@ -47,7 +47,7 @@ def view_retirements(
 
 
 def construct_retirement_query(
-        for_beneficiary: str | None, 
+        for_beneficiary: str | None,
         from_date: dt.date | None,
         before_date: dt.date | None,
         project: int | None,
@@ -72,7 +72,7 @@ def get_retirement(certificate_id: int) -> dict[str, Any] | None:
     rt_query = (
         select(Retirement)
         .options(
-            selectinload(Retirement.retired_from), 
+            selectinload(Retirement.retired_from),
             selectinload(Retirement.sink_statuses),
             selectinload(Retirement.vcs_project)
         )

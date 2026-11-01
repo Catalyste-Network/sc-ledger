@@ -5,7 +5,7 @@ Author: Alex Olieman <https://keybase.io/alioli>
 """
 import sys
 
-from sqlalchemy import Engine, create_engine, event
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.orm import sessionmaker
 

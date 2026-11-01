@@ -14,7 +14,7 @@ from sc_audit.session_manager import Session
 from sc_audit.sources.sinking_txs import get_sinking_transactions, get_tx_operations
 
 
-def load_sinking_txs(cursor: int=settings.FIRST_SINK_CURSOR) -> int:
+def load_sinking_txs(cursor: int = settings.FIRST_SINK_CURSOR) -> int:
     """
     Load (all) sinking transactions from Horizon into the DB.
 
@@ -35,7 +35,7 @@ def load_sinking_txs(cursor: int=settings.FIRST_SINK_CURSOR) -> int:
                     " can be stored.",
                     vcs_id=vcs_project_id
                 )
-            
+
             tx_operations = get_tx_operations(sink_tx['transaction_hash'])
             payment_data = get_payment_data(tx_operations)
             memo_type = sink_tx['transaction']['memo_type']
@@ -63,7 +63,7 @@ def load_sinking_txs(cursor: int=settings.FIRST_SINK_CURSOR) -> int:
                     toid=sink_tx['paging_token'],
                 )
             )
-        
+
         number_loaded = len(session.new)
 
     return number_loaded
@@ -72,6 +72,7 @@ def load_sinking_txs(cursor: int=settings.FIRST_SINK_CURSOR) -> int:
 def get_vcs_project_id(sinking_tx) -> Literal[1360]:
     # TODO: support multiple VCS projects
     return 1360
+
 
 def get_payment_data(transaction_operations: list[dict[str, Any]]) -> dict[str, Any]:
     for op in transaction_operations:

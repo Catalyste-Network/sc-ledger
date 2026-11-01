@@ -34,8 +34,8 @@ class VcsProject(VcsProjectBase, ScBase):
     __tablename__ = "vcs_projects"
 
     minted_blocks: Mapped[list[MintedBlock]] = relationship(
-        init=False, repr=False, 
-        back_populates="vcs_project", 
+        init=False, repr=False,
+        back_populates="vcs_project",
         order_by="asc(MintedBlock.block_start)"
     )
 
@@ -54,12 +54,13 @@ class UnknownVcsProject(Exception):
 def get_vcs_project(vcs_project_id: int) -> VcsProject | None:
     vcs_projects = {
         1360: VcsProject(
-            id=1360, 
-            name="Forest Management to reduce deforestation and degradation in Shipibo Conibo and Cacataibo Indigenous communities of Ucayali region", 
-            category="Agriculture Forestry and Other Land Use", 
-            protocol="VM0015", 
-            additional_certifications="CCB-Gold", 
-            region="Latin America", 
+            id=1360,
+            name="Forest Management to reduce deforestation and degradation in"
+            " Shipibo Conibo and Cacataibo Indigenous communities of Ucayali region",
+            category="Agriculture Forestry and Other Land Use",
+            protocol="VM0015",
+            additional_certifications="CCB-Gold",
+            region="Latin America",
             country="Peru"
         ),
     }

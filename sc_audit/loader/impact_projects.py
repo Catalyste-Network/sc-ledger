@@ -21,7 +21,7 @@ def load_impact_projects() -> int:
         if 1360 not in existing_vcs_projects:
             vcs_1360 = get_vcs_project(1360)
             session.add(vcs_1360)
-        
+
         number_loaded = len(session.new)
 
     return number_loaded

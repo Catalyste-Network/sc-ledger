@@ -17,7 +17,7 @@ from sc_audit.sources.retirements import get_retirements_list
 def load_retirements(from_date: dt.date | None = None) -> int:
     """
     Load all retirements from Verra into the DB.
-  
+
     TODO: add pagination (to support more than 2000 results)
     """
     retirement_data = get_retirements_list(from_date)

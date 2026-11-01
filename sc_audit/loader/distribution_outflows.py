@@ -13,7 +13,7 @@ from sc_audit.session_manager import Session
 from sc_audit.sources.minting_txs import get_carbon_outflows
 
 
-def load_distribution_txs(cursor: int=settings.FIRST_DIST_CURSOR) -> int:
+def load_distribution_txs(cursor: int = settings.FIRST_DIST_CURSOR) -> int:
     """
     Load (all) distribution outflows from Horizon into the DB.
 
@@ -34,7 +34,7 @@ def load_distribution_txs(cursor: int=settings.FIRST_DIST_CURSOR) -> int:
                     toid=payment['paging_token'],
                 )
             )
-        
+
         number_loaded = len(session.new)
 
     return number_loaded

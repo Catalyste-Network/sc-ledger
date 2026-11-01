@@ -25,7 +25,7 @@ def download_compatible_dumps() -> Path:
         if package_version.startswith(ref_version):
             # tagged data indicates latest compatible version
             return download_dumps(ref=ref_obj.ref)
-        
+
     # it's safe to get the most recent backup
     return download_dumps()
 
@@ -52,5 +52,5 @@ def download_dumps(ref: Opt[str] = NotSet) -> Path:
         write_path = temp_dir / cfile.name
         with write_path.open('wb') as dump_file:
             dump_file.write(content_bytes)
-        
+
     return temp_dir
